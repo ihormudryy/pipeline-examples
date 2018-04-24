@@ -1,0 +1,80 @@
+pipeline {
+    agent none
+    stages {
+        stage('Build') {
+            parallel {
+                stage('Linux ARM x86 flavor') {
+                    agent none
+                    steps {
+                        echo "Building...x86"
+                    }
+                }
+                stage('Linux ARM 64 flavor') {
+                    agent none
+                    steps {
+                        echo "Building...x64"
+                    }
+                }
+                stage('Linux x86 flavor') {
+                    agent none
+                    steps {
+                        echo "Building...x86"
+                    }
+                }
+                stage('Linuxx64 flavor') {
+                    agent none
+                    steps {
+                        echo "Building...x64"
+                    }
+                }
+            }
+        }
+        stage('Run Tests') {
+            parallel {
+                stage('Windows ARM x86 flavor') {
+                    agent none
+                    steps {
+                        echo "Testing...x86"
+                    }
+                }
+                stage('Windows ARM x64 flavor') {
+                    agent none
+                    steps {
+                        echo "Testing...x64"
+                    }
+                }
+                stage('Windows x86 flavor') {
+                    agent none
+                    steps {
+                        echo "Testing...x86"
+                    }
+                }
+                stage('Windows x64 flavor') {
+                    agent none
+                    steps {
+                        echo "Testing...x64"
+                    }
+                }
+            }
+        }
+        stage('Decide to deploy in production') {
+            agent none
+            steps {
+                script {
+                    env.DEPLOY = input message: 'Are you confident to deploy?',
+                        parameters: [choice(name: 'Deploy', choices: 'no\nyes', 
+                        description: 'Choose "yes" if you want to deploy this build')]
+                }
+            }
+        }
+        stage('Deploy') {
+            agent none
+            when {
+                environment name: 'DEPLOY', value: 'yes'
+            }
+            steps {
+                echo "Deploy...x64"
+            }
+        }
+    }
+}
